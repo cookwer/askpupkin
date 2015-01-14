@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Будь умнее - используй Ask_Bird</title>
+    <link rel="stylesheet" type="text/css" href="/css/index.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.css">
+	<link rel="stylesheet" type="text/css" href="/css/jquery.toast.min.css" />
+    {% if request.path == '/logout/' %}
+    <meta http-equiv="refresh" content="1; url=/">
+    {% endif %}
+</head>
+<body>
+    <header>
+
+    </header>
+
+    <div class="container">
+        <div class="row" id="header">
+            <div id="logo" class="col-md-10">
+               <span style="float:right; margin-top:50px;"> <h2>Cпроси Арнольда</h2> </span>
+                <img src="https://d13yacurqjgara.cloudfront.net/users/442230/screenshots/1325691/last_stand_poster_art_by_harijs_grundmanis.jpg" style="width:150px; height:150px; border-radius:50%;">
+            </div>
+            <div class="col-md-2" id="headerRight">
+                {% if user.is_authenticated %}
+                Добро пожаловать, <a href="/user/?name={{ user.username }}">{{ user.username }}</a> (<a href="{% url 'django.contrib.auth.views.logout' %}">Выйти</a>)
+                {% else %}
+                <a href="{% url 'django.contrib.auth.views.login' %}?next={{ request.get_full_path }}">Войти</a> или
+                <a href="/register/?next={{ request.get_full_path }}">зарегистрироваться</a>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="row" id="content">
+            <div class="col-md-9" id="leftCol">
+                <ul class="nav nav-tabs" id="tabs">
+                    {% block tabs %}{% endblock %}
+                    {% if user.is_authenticated %}
+                    <span id="ask" class="pull-right">
+                        <a data-toggle="modal" href="#myModal" id="askLink">Задать вопрос!</a>
+                    </span>
+                    {% endif %}
+                </ul>
+
+                {% if page == 'user' %}
+                    {% block usertabs %}{% endblock %}
+                {% elif page == 'search' %}
+                    {% block searchtabs %}{% endblock %}
+                {% endif %}
+
+                <div class="row">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+
+            <div class="col-md-3" id="rightCol">
+                <form id="search-form" method="GET" action="/search/">
+                    <div class="input-group" id="searchBox">
+                        <input id="search-query" type="text" name="query" class="form-control" placeholder="Поиск...">
+                        <span class="input-group-btn">
+                            <button id="search-button" class="btn btn-default" type="submit">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Облако тегов</div>
+                    <div class="panel-body" id="tagCloud">
+                        {% for name, weight in popular_tags.iteritems %}
+                        <a href="/tag/?t={{ name }}" class="tw{{ weight }}">{{ name }}</a>
+                        {% empty %}
+                        <div class="empty_list">Теги отсутствуют</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Активные пользователи</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="lastRegisteredList">
+                                    {% for user_name in last_registered_left %}
+                                    <li><a href="/user/?name={{ user_name }}">{{ user_name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="lastRegisteredList">
+                                    {% for user_name in last_registered_right %}
+                                    <li><a href="/user/?name={{ user_name }}">{{ user_name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="lastRegistered">
+
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center">
+            {% block paginator %}{% endblock %}
+        </footer>
+
+        {% if user.is_authenticated %}
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Задать вопрос!</h4>
+                    </div>
+                    <form method="POST" name="addQuestion" class="form-horizontal">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            {{ question_form.non_field_errors }}
+                            <div class="form-group">
+                                {{ question_form.title.errors }}
+                                <label for="id_title" class="col-lg-2 control-label">Заголовок:</label>
+                                <div class="col-lg-10">
+                                {{ question_form.title }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                {{ question_form.content.errors }}
+                                <label for="id_tags" class="col-lg-2 control-label">Вопрос:</label>
+                                <div class="col-lg-10">
+                                {{ question_form.content }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                {{ question_form.tags.errors }}
+                                <label for="id_title" class="col-lg-2 control-label">Теги:</label>
+                                <div class="col-lg-10">
+                                {{ question_form.tags }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Задать вопрос!</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                        </div>
+                        <input type="hidden" name="type" value="question">
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="/js/jquery.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/index.js"></script>
+    <script type="text/javascript" src="/js/jquery.toast.min.js"></script>
+    {% block scripts %}{% endblock %}
+
+    <script>
+        jQuery(document).ready(function($) {
+            $.toast.config.align = 'right';
+            $.toast.config.width = 400;
+        });
+    </script>
+
+    {% if question_form_failed == True %}
+    <script>
+        jQuery(document).ready(function($) {
+            $('#myModal').modal()
+        });
+    </script>
+    {% elif answer_form_failed == True %}
+    <script>
+        jQuery(document).ready(function($) {
+            window.location.href += '#answerForm';
+        });
+    </script>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,95 @@
+{% extends "index.html" %}
+
+{% block tabs %}
+    <li><a href="/">Новые</a></li>
+    <li><a href="/popular/">Популярные</a></li>
+    <li class="active"><a>Пользователь: {{ user_info.username }}</a></li>
+{% endblock %}
+
+{% block usertabs %}
+    <ul class="nav nav-tabs nav-justified" id="tabs">
+        {% if tab == 'info' %}
+            <li class="active"><a href="/user/?tab=info&name={{ user_info.username }}">Информация</a></li>
+            <li><a href="/user/?tab=asked&name={{ user_info.username }}">Заданные вопросы ({{ asked_questions_count }})</a></li>
+            <li><a href="/user/?tab=answered&name={{ user_info.username }}">Ответил на вопросы ({{ answered_questions_count }})</a></li>
+        {% elif tab == 'asked' %}
+            <li><a href="/user/?tab=info&name={{ user_info.username }}">Информация</a></li>
+            <li class="active"><a href="/user/?tab=asked&name={{ user_info.username }}">Задано вопросов ({{ asked_questions_count }})</a></li>Ответов ({{ answered_questions_count }})</a></li>
+        {% elif tab == 'answered' %}
+            <li><a href="/user/?tab=info&name={{ user_info.username }}">Информация</a></li>
+            <li><a href="/user/?tab=asked&name={{ user_info.username }}">Задано вопросов ({{ asked_questions_count }})</a></li>
+            <li class="active"><a href="/user/?tab=answered&name={{ user_info.username }}">Ответов ({{ answered_questions_count }})</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block content %}
+    {% if tab == 'info' %}
+        <div class="thumbnail" id="questions">
+            <table class="table table-striped" id="user_info_table">
+                <tr>
+                    <td>Пользователь: </td>
+                    <td>{{ user_info.username }}</td>
+                </tr>
+                <tr>
+                    <td>Полное имя: </td>
+                    <td>{{ user_info.get_full_name }}</td>
+                </tr>
+                <tr>
+                    <td>Email: </td>
+                    <td>{{ user_info.email }}</td>
+                </tr>
+                <tr>
+                    <td>Последнее посещение: </td>
+                    <td>{{ user_info.last_login }}</td>
+                </tr>
+                <tr>
+                    <td>Дата регистрации: </td>
+                    <td>{{ user_info.date_joined }}</td>
+                </tr>
+            </table>
+        </div>
+    {% elif tab == 'asked' %}
+        <div class="thumbnail" id="questions">
+        {% for question in questions %}
+            {% include "question.html" %}
+            {% empty %}
+            <div class="empty_list">{{ user_info.username }} не задал ниодного вопроса .</div>
+        {% endfor %}
+        </div>
+    {% elif tab == 'answered' %}
+        <div class="thumbnail" id="questions">
+        {% for question in questions %}
+            {% include "question.html" %}
+            {% empty %}
+            <div class="empty_list">{{ user_info.username }} не ответил ни на один вопрос .</div>
+        {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block paginator %}
+    <ul class="pagination">
+    {% if page == 'tag' %}
+        <li><a href="/{{ page }}/?t={{ tag.name }}&page=1">&laquo;</a></li>
+        {%  for i in page_range %}
+            {%  if  i == page_id %}
+            <li class="active"><a>{{ i }}</a></li>
+            {% else %}
+            <li><a href="/{{ page }}/?t={{ tag }}&page={{ i }}">{{ i }}</a></li>
+            {%  endif %}
+        {%  endfor %}
+        <li><a href="/{{ page }}/?t={{ tag }}&page={{ pages_count }}">&raquo;</a></li>
+    {% else %}
+        <li><a href="/{{ page }}/?page=1">&laquo;</a></li>
+        {%  for i in page_range %}
+            {%  if  i == page_id %}
+            <li class="active"><a>{{ i }}</a></li>
+            {% else %}
+            <li><a href="/{{ page }}/?page={{ i }}">{{ i }}</a></li>
+            {%  endif %}
+        {%  endfor %}
+        <li><a href="/{{ page }}/?page={{ pages_count }}">&raquo;</a></li>
+    {% endif %}
+    </ul>
+{% endblock %}

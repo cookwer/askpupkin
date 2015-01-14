@@ -1,0 +1,52 @@
+{% extends "index.html" %}
+
+{% block tabs %}
+    <li><a href="/">Новые</a></li>
+    <li><a href="/popular/">Популярные</a></li>
+    <li><a href="/statistics/">Статистика</a></li>
+    <li class="active"><a>Поиск: {{ query }}</a></li>
+{% endblock %}
+
+{% block searchtabs %}
+    <ul class="nav nav-tabs nav-justified" id="tabs">
+        {% if tab == 'questions' %}
+            <li class="active"><a href="/search/?tab=questions&query={{ query }}">Вопросы ({{ questions_count }})</a></li>
+            <li><a href="/search/?tab=answers&query={{ query }}">Ответы ({{ answers_count }})</a></li>
+        {% else %}
+            <li><a href="/search/?tab=questions&query={{ query }}">Вопросы ({{ questions_count }})</a></li>
+            <li class="active"><a href="/search/?tab=answers&query={{ query }}">Ответы ({{ entries_count }})</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <div class="thumbnail" id="questions">
+    {% if tab == 'questions' %}
+        {% for question in entries %}
+            {% include "question.html" %}
+            {% empty %}
+            <div class="empty_list">Похожие вопросы отсутствуют.</div>
+        {% endfor %}
+    {% elif tab == 'answers' %}
+        {% for answer in entries %}
+            {% include "answer.html" %}
+            {% empty %}
+            <div class="empty_list">Похожие ответы отсутствуют.</div>
+        {% endfor %}
+    {% endif %}
+    </div>
+{% endblock %}
+
+{% block paginator %}
+    <ul class="pagination">
+        <li><a href="/{{ page }}/?query={{ query }}&tab={{ tab }}&page=1">&laquo;</a></li>
+        {%  for i in page_range %}
+            {%  if  i == page_id %}
+            <li class="active"><a>{{ i }}</a></li>
+            {% else %}
+            <li><a href="/{{ page }}/?query={{ query }}&tab={{ tab }}&page={{ i }}">{{ i }}</a></li>
+            {%  endif %}
+        {%  endfor %}
+        <li><a href="/{{ page }}/?query={{ query }}&tab={{ tab }}&page={{ pages_count }}">&raquo;</a></li>
+    </ul>
+{% endblock %}

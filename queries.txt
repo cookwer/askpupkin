@@ -1,0 +1,25 @@
+Список вопросов (с пагинацией):
+SELECT * FROM `ask_question` ORDER BY `ask_question`.`date` DESC LIMIT 30 OFFSET 20
+
+Вопрос по его id:
+select * from 'ask_question' where 'id'=1
+
+Список ответов на вопрос:
+SELECT * FROM `ask_answer` WHERE `question_id` = 1 
+
+Список вопросов по тегу с пагинацией:
+SELECT * FROM `ask_question` INNER JOIN `ask_question_tags` ON (`ask_question`.`id` = `ask_question_tags`.`question_id`) INNER JOIN `ask_tag` ON (`ask_question_tags`.`tag_id` = `ask_tag`.`id`) WHERE `ask_tag`.`name` = 'additives'  LIMIT 30
+
+Поиск по заголовку вопроса:
+SELECT * FROM `ask_question` WHERE `ask_question`.`title` LIKE %Tellus%  LIMIT 30
+
+Поиск по телу вопроса:
+SELECT * FROM `ask_question` WHERE `ask_question`.`content` LIKE %Tellus%  LIMIT 30 OFFSET 10
+
+Список последних зарегистрированных пользователей:
+SELECT * FROM `auth_user` ORDER BY `date_joined` DESC LIMIT 10
+
+Список популярных тегов:
+SELECT `ask_tag`.`id`, `ask_tag`.`name`, COUNT(`ask_question_tags`.`question_id`) AS `quest_count` FROM `ask_tag` LEFT OUTER JOIN `ask_question_tags` ON (`ask_tag`.`id` = `ask_question_tags`.`tag_id`) GROUP BY `ask_tag`.`id` ORDER BY `quest_count` DESC LIMIT 30
+
+

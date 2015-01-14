@@ -1,0 +1,91 @@
+{% extends "index.html" %}
+
+{% block tabs %}
+    <li><a href="/">Новые</a></li>
+    <li><a href="/popular/">Популярные</a></li>
+    <li><a href="/statistics/">Статистика</a></li>
+    <li class="active"><a>Вопрос</a></li>
+{% endblock %}
+
+{% block content %}
+    <div class="thumbnail" id="questions">
+        <div class="thumbnail question" data-id="{{ question.id }}">
+            <div class="row">
+                <div class="col-md-1 rating">
+                    <a href="#" class="ratingArrow rating_up">
+                        <div class="glyphicon glyphicon-chevron-up"></div>
+                    </a>
+                    <div><b class="rating_value">{{ question.rating }}</b></div>
+                    <a href="#" class="ratingArrow rating_down">
+                        <div class="glyphicon glyphicon-chevron-down"></div>
+                    </a>
+                </div>
+                <div class="col-md-11">
+                    <div class="questionHeader">
+                        <span class="qheader">{{ question.title }}</span>
+                    </div>
+                    <div class="questionContent">
+                        {{ question.content|linebreaks }}
+                    </div>
+                    <div class="questionFooter">
+                        <div class="asker_name pull-right"><b>Спросил:</b> <a href="/user/?name={{ question.author.username }}">{{ question.author.username }}</a></div><br>
+                        <b>Теги:</b>
+                        {% for tag in question.tags.all %}
+                        <span><a href="/tag/?t={{ tag.name }}">{{ tag.name }}</a></span>
+                        {% endfor %}
+                        <div class="qdate pull-right">{{ question.date }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <div class="answers_title">Ответы ({{ answers.count }}):</div>
+
+        {% for answer in answers %}
+            {% include 'answer.html' %}
+        {% endfor %}
+
+        {% if user.is_authenticated %}
+        <div id="answerForm">
+            <form method="POST" name="addQuestion" class="">
+                {% csrf_token %}
+                {{ answer_form.non_field_errors }}
+                <div class="form-group">
+                    <label for="id_answer_content" class="control-label your_answer">Ваш вопрос:</label>
+                    {{ answer_form.content }}
+                    <div class="row">
+                        <div class="col-md-10">
+                            {{ answer_form.content.errors }}
+                        </div>
+                        <div class="col-md-2" id="answer_footer">
+                            <button class="btn btn-success" id="answer_button" type="submit">Ответить!</button>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="type" value="answer">
+            </form>
+        </div>
+        {% else %}
+            <div class="not_logged_to_answer">
+                Пожалуйста, <a href="{% url 'django.contrib.auth.views.login' %}?next={{ request.get_full_path }}">войдите</a> или
+                <a href="/register/?next={{ request.get_full_path }}">зарегистрируйтесь</a>, чтобы ответить.
+            </div>
+        {% endif %}
+    </div>
+{%  endblock %}
+
+
+{% block paginator %}
+    <ul class="pagination">
+        <li><a href="/{{ page }}/?q={{ question.id }}&page=1">&laquo;</a></li>
+        {%  for i in page_range %}
+            {%  if  i == page_id %}
+            <li class="active"><a href="/{{ page }}/?q={{ question.id }}&page={{ i }}">{{ i }}</a></li>
+            {% else %}
+            <li><a href="/{{ page }}/?q={{ question.id }}&page={{ i }}">{{ i }}</a></li>
+            {%  endif %}
+        {%  endfor %}
+        <li><a href="/{{ page }}/?q={{ question.id }}&page={{ pages_count }}">&raquo;</a></li>
+    </ul>
+{% endblock %}

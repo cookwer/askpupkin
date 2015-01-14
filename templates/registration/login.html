@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+
+{% block tabs %}
+    <li><a href="/">New</a></li>
+    <li><a href="/popular/">Popular</a></li>
+    <li class="active"><a>Login</a></li>
+{% endblock %}
+
+{% block content %}
+    <div class="thumbnail">
+        <br>
+        <form class="form-horizontal" role="form" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+            {% csrf_token %}
+            {% if form.errors %}
+                <p>Your username and password didn't match. Please try again.</p>
+            {% endif %}
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}" class="col-md-2 control-label">{{ form.username.label }}</label>
+
+                <div class="col-md-4">
+                    <input id="{{ form.username.id_for_label }}" class="form-control" maxlength="{{ form.username.max_length }}" name="username" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}" class="col-md-2 control-label">{{ form.password.label }}</label>
+
+                <div class="col-md-4">
+                    <input id="{{ form.password.id_for_label }}" class="form-control" maxlength="{{ form.password.max_length }}" name="password" type="password">
+                </div>
+            </div>
+            <input type="hidden" name="next" value="{{ next }}"/>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <button type="submit" class="btn btn-default">Sign in</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

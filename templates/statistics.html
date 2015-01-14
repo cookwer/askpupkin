@@ -1,0 +1,24 @@
+{% extends "index.html" %}
+
+{% block tabs %}
+    <li><a href="/">Новые</a></li>
+    <li><a href="/popular/">Популярные</a></li>
+    <li class="active"><a href="/statistics/">Статистика</a></li>
+{% endblock %}
+
+{% block content %}
+    <h3>Выдача динамического графика:</h3>
+    <div id="chart_div"></div>
+
+    <h3>Загруженность:</h3>
+    <div class="progress progress-striped active">
+        <div class="progress-bar"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+        </div>
+        <span id="progressCaption">0%</span>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="/js/statistics.js"></script>
+{% endblock %}

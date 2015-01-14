@@ -1,0 +1,52 @@
+{% extends "index.html" %}
+
+{% block tabs %}
+    <li><a href="/">New</a></li>
+    <li><a href="/popular/">Popular</a></li>
+    <li class="active"><a>Registration</a></li>
+{% endblock %}
+
+{% block content %}
+    <div class="thumbnail">
+        <div class="reg_form">
+            <h3>Create an account</h3>
+
+            <form method="post" action="/register/" class="form-horizontal">
+                {% csrf_token %}
+                <div class="form_error_message">
+                    {% if form.errors %}
+                        Validation failed.
+                    {% endif %}
+                </div>
+
+                {% for field in form %}
+                    {% if reg_form.username.errors %}
+                    <div class="form-group has-error">
+                    {% else %}
+                    <div class="form-group">
+                    {% endif %}
+                        <label for="{{ field.id_for_label }}" class="col-md-2 control-label">{{ field.label }}</label>
+
+                        <div class="col-md-5">
+                            <input id="{{ field.id_for_label }}" class="form-control"
+                                   maxlength="{{ field.max_length }}" name="{{ field.name }}"
+                                   {% if field.name != "password1" and field.name != "password2" %}
+                                   type="text"
+                                   {% else %}
+                                   type="password"
+                                   {% endif %}
+                                   value="{{ field.value|default_if_none:"" }}">
+                        </div>
+
+                        <div class="col-md-5 error_message">
+                            {{ field.errors|first }}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <input type="hidden" name="next" value="{{ next }}"/>
+                <button type="submit" class="btn btn-default">Create account</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

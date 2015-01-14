@@ -1,0 +1,27 @@
+ <div class="thumbnail question" data-id="{{ question.id }}">
+    <div class="row">
+        <div class="col-md-1 rating">
+            <a href="#" class="ratingArrow rating_up">
+                <div class="glyphicon glyphicon-chevron-up"></div>
+            </a>
+            <div><b class="rating_value">{{ question.rating }}</b></div>
+            <a href="#" class="ratingArrow rating_down">
+                <div class="glyphicon glyphicon-chevron-down"></div>
+            </a>
+        </div>
+        <div class="col-md-11">
+            <div class="questionHeader">
+                <span class="qheader">{{ question.title }}</span>
+            </div>
+            <div class="questionContent">
+                {{ question.short_content|linebreaks }}
+            </div>
+            <div class="questionFooter">
+                <a href="/question/?q={{ question.id }}">Прочитать ответы ({{ question.answer_set.count }})</a> |
+                <a href="/question/?q={{ question.id }}#answerForm">Ответить</a>
+
+                <span class="qdate pull-right">{{ question.date }}</span>
+            </div>
+        </div>
+    </div>
+</div>

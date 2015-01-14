@@ -1,0 +1,40 @@
+<div class="thumbnail answer" data-id="{{ answer.id }}">
+    <div class="row">
+        <div class="col-md-1 rating">
+            <a href="#" class="ratingArrow rating_up">
+                <div class="glyphicon glyphicon-chevron-up"></div>
+            </a>
+            <div><b class="rating_value">{{ answer.rating }}</b></div>
+            <a href="#" class="ratingArrow rating_down">
+                <div class="glyphicon glyphicon-chevron-down"></div>
+            </a>
+        </div>
+        <div class="col-md-11">
+            <div class="answerContent">
+                {% if answer.short_content %}
+                {{ answer.short_content|linebreaks }}
+                {% else %}
+                {{ answer.content|linebreaks }}
+                {% endif %}
+            </div>
+            <div class="answerFooter">
+                <div class="asker_name pull-right"><b>Ответил:</b> <a href="/user/?name={{ answer.author.username }}">{{ answer.author.username }}</a></div><br>
+
+                {% if user == question.author and page == 'answers' %}
+                    {% if answer.right == False %}
+                    <a class="mark">Отметить как правильный ответ</a>
+                    {% else %}
+                    <img src="http://vintika.net/uploads/posts/2012-10/1350579373_1350578679_galochka.jpg" style="width:50px; height:50px; margin-left:10px; position:relative; top:-20px;">
+                    {% endif %}
+                {% endif %}
+
+                {%  if answer.right and page == 'answers' and user != answer.author %}
+                <img src="http://s1.iconbird.com/ico/0612/GooglePlusInterfaceIcons/w128h1281338911330checkmark.png" style="width:50px; height:50px; margin-left:10px; position:relative; top:-20px;">
+                {% elif page == 'search' %}
+                <a href="/question/?q={{ answer.question_id }}">Перейти к вопросу</a>
+                {% endif %}
+                <div class="qdate pull-right">{{ answer.date }}</div>
+            </div>
+        </div>
+    </div>
+</div>

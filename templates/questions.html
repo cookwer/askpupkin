@@ -1,0 +1,63 @@
+{% extends "index.html" %}
+
+{% block tabs %}
+    {% if page == 'popular' %}
+        <li><a href="/">Новые</a></li>
+        <li class="active"><a>Популярные</a></li>
+        <li><a href="/statistics/">Статистика</a></li>
+    {% elif page == 'new' %}
+        <li class="active"><a>Новые</a></li>
+        <li><a href="/popular/">Популярные</a></li>
+        <li><a href="/statistics/">Статистика</a></li>
+    {% elif page == 'tag' %}
+        <li><a href="/">Новые</a></li>
+        <li><a href="/popular/">Популярные</a></li>
+        <li><a href="/statistics/">Статистика</a></li>
+        <li class="active"><a>Тег: {{ tag }} ({{ questions_count }})</a></li>
+    {% elif page == 'search' %}
+        <li><a href="/">Новые</a></li>
+        <li><a href="/popular/">Популярные</a></li>
+        <li><a href="/statistics/">Статистика</a></li>
+        <li class="active"><a>Поиск: {{ search }} ({{ results_count }})</a></li>
+    {% elif page == 'statistics' %}
+        <li><a href="/">Новые</a></li>
+        <li><a>Популярные</a></li>
+        <li class="active"><a>Статистика</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="thumbnail" id="questions">
+        {% for question in questions %}
+            {% include "question.html" %}
+            {% empty %}
+            <div class="empty_list">Вопросов не найдено. :(</div>
+        {% endfor %}
+    </div>
+{%  endblock %}
+
+{% block paginator %}
+    <ul class="pagination">
+    {% if page == 'tag' %}
+        <li><a href="/{{ page }}/?t={{ tag.name }}&page=1">&laquo;</a></li>
+        {%  for i in page_range %}
+            {%  if  i == page_id %}
+            <li class="active"><a>{{ i }}</a></li>
+            {% else %}
+            <li><a href="/{{ page }}/?t={{ tag }}&page={{ i }}">{{ i }}</a></li>
+            {%  endif %}
+        {%  endfor %}
+        <li><a href="/{{ page }}/?t={{ tag }}&page={{ pages_count }}">&raquo;</a></li>
+    {% else %}
+        <li><a href="/{{ page }}/?page=1">&laquo;</a></li>
+        {%  for i in page_range %}
+            {%  if  i == page_id %}
+            <li class="active"><a>{{ i }}</a></li>
+            {% else %}
+            <li><a href="/{{ page }}/?page={{ i }}">{{ i }}</a></li>
+            {%  endif %}
+        {%  endfor %}
+        <li><a href="/{{ page }}/?page={{ pages_count }}">&raquo;</a></li>
+    {% endif %}
+    </ul>
+{% endblock %}

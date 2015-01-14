@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+
+{% block tabs %}
+    <li><a href="/">New</a></li>
+    <li><a href="/popular/">Popular</a></li>
+    <li class="active"><a>Logged out</a></li>
+{% endblock %}
+
+{% block content %}
+
+    <div class="logged_out_message">
+        You are logged out. Redirecting...
+    </div>
+
+{% endblock %}
